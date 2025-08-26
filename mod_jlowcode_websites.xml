@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" method="upgrade" client="site">
+    <name>MOD_JLOWCODE_WEBSITES</name>
+   	<author>Jlowcode Organization</author>
+	<creationDate>August 2025</creationDate>
+	<copyright>Copyright (C) 2025 Jlowcode Org - All rights reserved.</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>contact@jlowcode.org</authorEmail>
+	<authorUrl>www.jlowcode.org</authorUrl>
+	<version>1.0.0</version>
+    <description>MOD_JLOWCODE_WEBSITES_DESC</description>
+    <namespace path="src">Jlowcode\Module\JlowcodeWebsites</namespace>
+    <files>
+        <folder module="mod_jlowcode_websites">services</folder>
+        <folder>src</folder>
+        <folder>tmpl</folder>
+        <folder>language</folder>
+        <filename>joomla.asset.json</filename>
+    </files>
+
+    <media destination="mod_jlowcode_websites" folder="media">
+        <folder>css</folder>
+    </media>
+
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field
+					name="layout"
+					type="modulelayout"
+					label="JFIELD_ALT_LAYOUT_LABEL"
+					class="form-select"
+					validate="moduleLayout"
+				/>
+            </fieldset>
+        </fields>
+    </config>
+</extension>

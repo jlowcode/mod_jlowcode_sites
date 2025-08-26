@@ -1,0 +1,13 @@
+{
+  "$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
+  "name": "mod_jlowcode_websites",
+  "version": "1.0.0",
+  "description": "Assets for jlwocode websites module",
+  "assets": [
+    {
+      "name": "mod_jlowcode_websites.styles",
+      "type": "style",
+      "uri": "mod_jlowcode_websites/css/template.css"
+    }
+  ]
+}
