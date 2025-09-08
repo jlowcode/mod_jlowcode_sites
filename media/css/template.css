@@ -1,6 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
 
 /* Some external configurations */
+.module-website {
+    display: block !important;
+}
+
 #g-container-main #g-navigation {
     box-shadow: none;
 }
@@ -9,9 +13,13 @@
     box-shadow: 0px 1px 2px 0px #bfbfbf;
 }
 
-#g-container-main #g-navigation .g-container {
-    padding-right: 0px !important;
-    padding-bottom: 0px !important;
+#g-container-main #g-navigation .g-container .g-dropdown-column .g-grid {
+    box-shadow: none;;
+}
+
+#g-container-main #g-navigation .module-website .g-content,
+#g-container-main #g-navigation .module-website .g-container {
+    padding: 0px !important;
 }
 
 /* Banner */
@@ -32,24 +40,59 @@
     background-color: #002E6E;
 }
 
-.website ul {
+.website .menu-website {
+    height: 36px;
+    display: flex;
+    align-items: center;
+}
+
+.website nav {
+    width: 100%;
+}
+
+.website nav .g-toplevel {
+    display: flex;
     justify-content: space-evenly;
+    align-items: center;
     gap: 24px;
     padding-left: calc(1.5rem * 0.5 + 40px);
     padding-right: calc(1.5rem * 0.5 + 40px);
+    width: 100%;
 }
 
-.website ul li a {
+.website .g-menu-parent-indicator,
+.website .g-menu-item-title {
     font-family: 'Inter', sans-serif !important;
-    color: #FAFBFC;
+    color: #FAFBFC !important;
     text-align: center;
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 20px;
 }
 
-.website .mod-list li a:hover, .website .mod-list li.active > a {
-    font-weight: 900;
-    text-decoration: none;
+.website .g-dropdown .g-menu-parent-indicator,
+.website .g-dropdown .g-menu-item-title {
+    color: inherit !important;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+.website .g-menu-item-container {
+    display: flex;
+    align-items: center;
+}
+
+.website .g-menu-parent-indicator {
+    margin-left: 4px;
+}
+
+.website .g-main-nav .g-toplevel > li.g-menu-item {
+    margin-top: 0 !important;
+}
+
+@media screen and (max-width: 768px) {
+    .website nav .g-toplevel {
+        flex-direction: column;
+    }
+
+    .website .menu-website {
+        height: 100%;
+    }
 }
