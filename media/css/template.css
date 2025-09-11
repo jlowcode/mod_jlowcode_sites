@@ -52,12 +52,16 @@
 
 .website nav .g-toplevel {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: flex-start;
     align-items: center;
     gap: 24px;
     padding-left: calc(1.5rem * 0.5 + 40px);
     padding-right: calc(1.5rem * 0.5 + 40px);
     width: 100%;
+}
+
+#g-navigation .website nav .g-toplevel li:first-child {
+    margin-left: 0px;
 }
 
 .website .g-menu-parent-indicator,
