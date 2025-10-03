@@ -52,8 +52,8 @@ class JlowcodeWebsitesHelper implements DatabaseAwareInterface
             return [];
         }
 
-        $isSubPage = $this->checkIsSubPage($app);
-        if(!$isSubPage) {
+        $isSubItem = $this->checkIsSubItem($app);
+        if(!$isSubItem) {
             return [];
         }
 
@@ -150,13 +150,30 @@ class JlowcodeWebsitesHelper implements DatabaseAwareInterface
     }
 
     /**
-     * This method return the website id. It use the current list id
+     * This method return the website id.
      * 
      * @param       CMSApplicationInterface     $app        Application
      * 
      * @return      int
      */
     private function getWebsiteId(CMSApplicationInterface $app)
+    {
+        $websiteId = match($this->pageFrom) {
+            'list' => $this->getWebsiteIdFromList($app),
+            'visualization' => $this->getWebsiteIdFromVisualization($app)
+        };
+
+        return $websiteId;
+    }
+
+    /**
+     * This method return the website id. It use the current list id
+     * 
+     * @param       CMSApplicationInterface     $app        Application
+     * 
+     * @return      int
+     */
+    private function getWebsiteIdFromList(CMSApplicationInterface $app)
     {
         $db = $this->getDatabase();
 
@@ -172,6 +189,38 @@ class JlowcodeWebsitesHelper implements DatabaseAwareInterface
         return (int) $websiteId;
     }
 
+    /**
+     * This method return the website id. It use the current visualization id
+     *
+     * @param       CMSApplicationInterface     $app        Application
+     *
+     * @return      int
+     */
+    private function getWebsiteIdFromVisualization(CMSApplicationInterface $app)
+    {
+        $db = $this->getDatabase();
+
+        $visualizationId = $this->getVisualizationId($app);
+
+        $query = $db->getQuery(true);
+        $query->select('params')
+            ->from($db->qn('#__fabrik_visualizations'))
+            ->where($db->qn('id') . ' = ' . $db->q($visualizationId));
+        $db->setQuery($query);
+        $params = json_decode($db->loadResult(), true);
+
+        $websiteId = $params['website_id'];
+
+        return $websiteId;
+    }
+
+    /**
+     * This method get the menu items from a menu type
+     *
+     * @param       string      $menuType       Menu type
+     *
+     * @return      array
+     */
     private function getMenuItems($menuType)
     {
         $modelItem = Factory::getApplication()->bootComponent('com_menus')->getMVCFactory()->createModel('Item', 'Administrator');
@@ -209,25 +258,80 @@ class JlowcodeWebsitesHelper implements DatabaseAwareInterface
     }
 
     /**
+     * This method verify if the actual link is a sub page of any website. It use the current list id
+     * 
+     * @param       CMSApplicationInterface     $app        Application
+     * 
+     * @return      bool
+     */
+    private function checkIsSubItem(CMSApplicationInterface $app)
+    {
+        $isSubPageFromList = $this->checkIsSubItemFromList($app);
+        $isSubPageFromVisualization = $this->checkIsSubItemFromVisualization($app);
+
+        return $isSubPageFromList || $isSubPageFromVisualization;
+    }
+
+    /**
      * This method verify if the actual list is a sub page of any website. It use the current list id
      * 
      * @param       CMSApplicationInterface     $app        Application
      * 
      * @return      bool
      */
-    private function checkIsSubPage(CMSApplicationInterface $app)
+    private function checkIsSubItemFromList(CMSApplicationInterface $app)
     {
         $db = $this->getDatabase();
         $listId = $this->getListId($app);
+
+        if(!$listId) {
+            return false;
+        }
 
         $query = $db->getQuery(true);
         $query->select('COUNT(*)')
             ->from($db->qn($this->menuItensTable))
             ->where($db->qn('menu_list') . ' = ' . $db->q($listId));
         $db->setQuery($query);
-        $isSubPage = $db->loadResult();
+        $isSubPage = (bool) $db->loadResult();
 
-        return (bool) $isSubPage;
+        if($isSubPage) {
+            $this->pageFrom = 'list';
+        }
+
+        return $isSubPage;
+    }
+
+    /**
+     * This method verify if the actual visualization is a sub page of any website. It use the current list id
+     * 
+     * @param       CMSApplicationInterface     $app        Application
+     * 
+     * @return      bool
+     */
+    private function checkIsSubItemFromVisualization(CMSApplicationInterface $app)
+    {
+        $db = $this->getDatabase();
+        $visualizationId = $this->getVisualizationId($app);
+
+        if(!$visualizationId) {
+            return false;
+        }
+
+        $query = $db->getQuery(true);
+        $query->select('params')
+            ->from($db->qn('#__fabrik_visualizations'))
+            ->where($db->qn('id') . ' = ' . $db->q($visualizationId));
+        $db->setQuery($query);
+        $params = json_decode($db->loadResult(), true);
+
+        $isSubPage = (bool) $params['website_id'];
+
+        if ($isSubPage) {
+            $this->pageFrom = 'visualization';
+        }
+
+        return $isSubPage;
     }
 
     /**
@@ -317,5 +421,27 @@ class JlowcodeWebsitesHelper implements DatabaseAwareInterface
         }
 
         return $listId;
+    }
+
+    /**
+     * This method get the visualization id from input
+     * 
+     * @param       CMSApplicationInterface     $app        Application
+     * 
+     * @return      bool|int
+     */
+    private function getVisualizationId($app)
+    {
+        $formModel = Factory::getApplication()->bootComponent('com_fabrik')->getMVCFactory()->createModel('Form', 'FabrikFEModel');
+
+        $input = $app->input;
+        $view = $input->getInput('view');
+        $itemId = $input->getInt('id');
+
+        if($view != 'visualization') {
+            return false;
+        }
+
+        return $itemId;
     }
 }
